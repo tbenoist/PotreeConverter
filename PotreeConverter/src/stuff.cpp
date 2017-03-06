@@ -34,10 +34,10 @@ using std::binary_function;
 using std::map;
 
 
-#ifdef BOOST_OS_WINDOWS
+#if BOOST_OS_WINDOWS
 #include <Windows.h>>
 #elif BOOST_OS_LINUX
-
+#include <linux/limits.h>
 #elif BOOST_OS_MACOS
 
 #elif BOOST_OS_BSD
@@ -212,7 +212,7 @@ string getExecutablePath(){
 
 	string path = "./";
 	
-#ifdef BOOST_OS_WINDOWS
+#if BOOST_OS_WINDOWS
 	char  buffer[MAX_PATH]; 
 	GetModuleFileName( NULL, buffer, MAX_PATH );
 
@@ -223,7 +223,10 @@ string getExecutablePath(){
 	char buff[PATH_MAX];
     ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
     if (len != -1) {
-      buff[len] = '\0';
+	char* basedir=strrchr (buff, '/');
+	*basedir='\0';
+	//buff[len] = '\0';
+	
       path = string(buff);
     }else{
 		cout << "WARNING: Potree was unable to determine to path to the executable." << endl;
